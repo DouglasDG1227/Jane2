@@ -1,14 +1,12 @@
-# Etapa única — apenas Nginx, sem Node
 FROM nginx:alpine
 
-# Remover conteúdo padrão do Nginx
-RUN rm -rf /usr/share/nginx/html/*
+# Remover configuração padrão
+RUN rm -rf /usr/share/nginx/html/* /etc/nginx/conf.d/default.conf
 
-# Copiar todos os arquivos do projeto para a pasta pública do Nginx
-COPY . /usr/share/nginx/html
+# Copiar build (dist) e nova config
+COPY dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expor a porta padrão HTTP
 EXPOSE 80
 
-# Rodar o servidor
 CMD ["nginx", "-g", "daemon off;"]
