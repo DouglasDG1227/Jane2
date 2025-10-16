@@ -1,12 +1,14 @@
 FROM nginx:alpine
 
-# Remover configuração padrão
+# Limpar HTML padrão
 RUN rm -rf /usr/share/nginx/html/* /etc/nginx/conf.d/default.conf
 
-# Copiar build (dist) e nova config
-COPY dist /usr/share/nginx/html
+# Copiar build compactado e config
+COPY dist.zip /tmp/dist.zip
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
+# Descompactar dist.zip
+RUN apk add --no-cache unzip && unzip /tmp/dist.zip -d /usr/share/nginx/html && rm /tmp/dist.zip
 
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
