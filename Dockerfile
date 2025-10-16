@@ -1,32 +1,14 @@
-# Etapa de build
-FROM node:18 AS builder
-
-# Definir diretório de trabalho
-WORKDIR /app
-
-# Copiar arquivos de dependências
-COPY package*.json ./
-
-# Instalar dependências (forçando ignorar conflitos)
-RUN npm install --legacy-peer-deps
-
-# Copiar resto do código
-COPY . .
-
-# Gerar build de produção
-RUN npm run build
-
-# Etapa de produção (Nginx)
+# Etapa única — apenas Nginx, sem Node
 FROM nginx:alpine
 
-# Remover arquivos default do nginx
+# Remover conteúdo padrão do Nginx
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copiar build gerado para o Nginx
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Copiar todos os arquivos do projeto para a pasta pública do Nginx
+COPY . /usr/share/nginx/html
 
-# Expor a porta
+# Expor a porta padrão HTTP
 EXPOSE 80
 
-# Rodar nginx
+# Rodar o servidor
 CMD ["nginx", "-g", "daemon off;"]
